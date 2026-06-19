@@ -41,7 +41,7 @@ export default function Header() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    redirect("/signin");
+    redirect("/");
   }
 
   if (pathname.startsWith("/dashboard")) return null;

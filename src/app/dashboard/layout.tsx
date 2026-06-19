@@ -12,7 +12,7 @@ export default async function DashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/signin");
+  if (!user) redirect("/");
 
   return (
     <div className="flex h-screen bg-[#0A0A0D] overflow-hidden">

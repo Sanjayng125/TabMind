@@ -60,7 +60,7 @@ const SearchTabsDialog = () => {
         <p className="text-zinc-500 text-sm mb-1">
           Search by title, summary, URL, or tag
         </p>
-        <DialogTrigger className="w-full flex items-center justify-start gap-3 px-3 mb-6 cursor-pointer bg-zinc-900 border border-zinc-700 h-11 hover:ring-2 hover:ring-white/20 transition">
+        <DialogTrigger className="w-full flex items-center justify-start gap-3 px-3 mb-3 cursor-pointer bg-zinc-900 border border-zinc-700 h-11 hover:ring-2 hover:ring-white/20 transition">
           <Search className="w-4 h-4 text-zinc-500" />
           <p className="text-zinc-600 text-sm">
             e.g. nextjs, design tools, ai papers...

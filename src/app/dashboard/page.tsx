@@ -5,9 +5,10 @@ import type { Tab } from "@/types/database";
 import TabList from "@/components/dashboard/TabList";
 import { useQuery } from "@tanstack/react-query";
 import SearchTabsDialog from "@/components/dashboard/SearchTabsDialog";
+import AddTabDialog from "@/components/dashboard/AddTabDialog";
 
 export default function DashboardPage() {
-  const { data: tabs, isLoading } = useQuery({
+  const { data: tabs = [], isLoading } = useQuery({
     queryKey: ["tabs"],
     queryFn: async () => {
       const res = await fetch("/api/tabs", { cache: "no-store" });
@@ -32,7 +33,7 @@ export default function DashboardPage() {
               {tabs?.length ?? 0} tab{tabs?.length !== 1 ? "s" : ""} saved
             </p>
           </div>
-          <a
+          {/* <a
             href="https://chromewebstore.google.com"
             target="_blank"
             rel="noopener noreferrer"
@@ -44,7 +45,8 @@ export default function DashboardPage() {
             >
               🧩 Use the extension to save tabs &gt;
             </Button>
-          </a>
+          </a> */}
+          <AddTabDialog />
         </div>
 
         {/* You can restrict this feature to pro users only, If you want to. */}
@@ -57,7 +59,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {tabs?.length && <TabList tabs={tabs} />}
+      {tabs?.length > 0 && <TabList tabs={tabs} />}
 
       {tabs?.length === 0 && !isLoading && (
         <div className="flex flex-col items-center justify-center py-32 text-center">

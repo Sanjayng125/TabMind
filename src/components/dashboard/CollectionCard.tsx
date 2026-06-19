@@ -197,7 +197,7 @@ const CollectionCard = ({ collection }: { collection: Collection }) => {
           {colTabs.map((tab) => (
             <div
               key={tab.id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/30 transition"
+              className="flex flex-col space-y-2 px-4 py-3 hover:bg-zinc-800/30 transition"
             >
               <div className="w-6 h-6 rounded bg-zinc-800 flex items-center justify-center shrink-0">
                 {tab.favicon_url ? (

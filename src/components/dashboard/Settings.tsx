@@ -57,7 +57,7 @@ export default function Settings({
         <p className="text-xs text-zinc-600 uppercase tracking-widest mb-4">
           Profile
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <Avatar className="h-12 w-12">
             <AvatarImage src={user.user_metadata?.avatar_url} />
             <AvatarFallback className="bg-zinc-800 text-zinc-300">
@@ -65,21 +65,23 @@ export default function Settings({
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-white font-medium">
-              {user.user_metadata?.full_name ?? "User"}
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-white font-medium">
+                {user.user_metadata?.full_name ?? "User"}
+              </span>
+              <Badge
+                variant="outline"
+                className={
+                  isFree
+                    ? "border-zinc-700 text-zinc-400"
+                    : "border-indigo-700 text-indigo-400 bg-indigo-950/30"
+                }
+              >
+                {isFree ? "Free" : "Pro"}
+              </Badge>
+            </div>
             <p className="text-zinc-500 text-sm">{user.email}</p>
           </div>
-          <Badge
-            variant="outline"
-            className={`ml-auto ${
-              isFree
-                ? "border-zinc-700 text-zinc-400"
-                : "border-indigo-700 text-indigo-400 bg-indigo-950/30"
-            }`}
-          >
-            {isFree ? "Free" : "Pro"}
-          </Badge>
         </div>
       </div>
 
