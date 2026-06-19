@@ -1,4 +1,5 @@
-const APP_URL = "http://localhost:3000";
+const APP_URL = "https://tab-mind.vercel.app";
+// const APP_URL = "http://localhost:3000";
 
 // ---- State ----
 let currentTabs = [];
