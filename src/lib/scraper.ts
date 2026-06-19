@@ -10,7 +10,7 @@ export async function scrapeUrl(url: string): Promise<{
             headers: {
                 'User-Agent': 'Mozilla/5.0 (compatible; TabMind/1.0)',
             },
-            signal: AbortSignal.timeout(8000), // 8s timeout
+            signal: AbortSignal.timeout(10000), // 10s timeout
         })
 
         const html = await res.text()
