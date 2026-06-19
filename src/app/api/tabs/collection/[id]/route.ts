@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 
 
 export async function GET(
-    _req: Request, { params }: { params: { id: string } }) {
+    _req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 // PATCH — update a tab (assign collection, mark read etc)
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = await createClient()
