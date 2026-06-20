@@ -83,7 +83,17 @@ async function saveAllTabs() {
       const data = await res.json();
 
       if (statusEl) {
-        if (data.duplicate) {
+        if (res.status === 429) {
+          statusEl.className = "tab-status status-error";
+          statusEl.textContent = "✕";
+          statusEl.title = data.error;
+
+          if (progressText) {
+            progressText.textContent = `⏳ Rate limited. Retry in ${data.retryAfter}s`;
+            progressText.style.color = "#f59e0b";
+          }
+          break; // stop processing remaining tabs
+        } else if (data.duplicate) {
           statusEl.className = "tab-status status-duplicate";
           statusEl.textContent = "~";
           statusEl.title = "Already saved";

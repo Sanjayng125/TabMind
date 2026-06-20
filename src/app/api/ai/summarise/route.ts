@@ -3,6 +3,7 @@ import { geminiModel } from '@/lib/gemini'
 import { scrapeUrl } from '@/lib/scraper'
 import { NextResponse } from 'next/server'
 import { Profile } from '@/types/database'
+import { summariseRateLimit } from '@/lib/rate-limit'
 
 const TRACKING_PARAMS = [
     'utm_source', 'utm_medium', 'utm_campaign',
@@ -33,6 +34,30 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        // Rate limit — keyed per user
+        const { success, limit, remaining, reset, } = await summariseRateLimit.limit(
+            user.id
+        )
+
+        if (!success) {
+            const resetIn = Math.ceil((reset - Date.now()) / 1000)
+            return NextResponse.json(
+                {
+                    error: `Too many requests. You can save ${limit} tabs per minute. Try again in ${resetIn}s.`,
+                    retryAfter: resetIn,
+                },
+                {
+                    status: 429,
+                    headers: {
+                        'X-RateLimit-Limit': limit.toString(),
+                        'X-RateLimit-Remaining': remaining.toString(),
+                        'X-RateLimit-Reset': reset.toString(),
+                        'Retry-After': resetIn.toString(),
+                    },
+                }
+            )
         }
 
         const { url } = await req.json()
