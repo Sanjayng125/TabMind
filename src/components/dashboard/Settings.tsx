@@ -9,6 +9,8 @@ import { LogOut } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types/database";
 import { PLANS } from "@/lib/constants";
+import DeleteAccountDialog from "./DeleteAccountDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Settings({
   user,
@@ -22,6 +24,7 @@ export default function Settings({
   collectionsCount: number;
 }) {
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
   const initials =
     user.user_metadata?.full_name
@@ -32,6 +35,7 @@ export default function Settings({
 
   async function handleSignOut() {
     await supabase.auth.signOut();
+    queryClient.clear();
     window.location.href = "/";
   }
 
@@ -169,7 +173,8 @@ export default function Settings({
         <p className="text-xs text-zinc-600 uppercase tracking-widest mb-4">
           Account
         </p>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          {/* Sign out */}
           <Button
             variant="outline"
             className="w-fit border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900"
@@ -178,6 +183,9 @@ export default function Settings({
             <LogOut className="w-4 h-4 mr-2" />
             Sign out
           </Button>
+
+          {/* Delete account */}
+          <DeleteAccountDialog />
         </div>
       </div>
     </div>

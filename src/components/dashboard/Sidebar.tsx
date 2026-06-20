@@ -17,7 +17,7 @@ import {
 import { Loader2, Menu } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { NAV_ITEMS } from "@/lib/constants";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Collection } from "@/types/database";
 
 function SidebarContent({
@@ -29,6 +29,7 @@ function SidebarContent({
 }) {
   const pathname = usePathname();
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
   const { data: collections = [], isLoading: isCollectionsLoading } = useQuery({
     queryKey: ["sidebar-collections"],
@@ -55,6 +56,7 @@ function SidebarContent({
 
   async function handleSignOut() {
     await supabase.auth.signOut();
+    queryClient.clear();
     window.location.href = "/";
   }
 

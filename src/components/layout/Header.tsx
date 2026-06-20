@@ -14,12 +14,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -41,6 +43,7 @@ export default function Header() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
+    queryClient.clear();
     redirect("/");
   }
 

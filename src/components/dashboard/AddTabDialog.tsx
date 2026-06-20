@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -5,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -66,6 +68,7 @@ const AddTabDialog = () => {
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            disabled={handleAddTabMutation.isPending}
             onKeyDown={(e) =>
               e.key === "Enter" && handleAddTabMutation.mutate()
             }

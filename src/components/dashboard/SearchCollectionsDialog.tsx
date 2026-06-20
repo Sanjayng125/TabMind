@@ -69,7 +69,9 @@ const SearchCollectionsDialog = () => {
         </p>
         <DialogTrigger className="w-full flex items-center justify-start gap-3 px-3 mb-6 cursor-pointer bg-zinc-900 border border-zinc-700 h-11 hover:ring-2 hover:ring-white/20 transition">
           <FolderOpen className="w-4 h-4 text-zinc-500" />
-          <p className="text-zinc-600 text-sm">Search collections...</p>
+          <p className="text-zinc-600 text-sm truncate">
+            Search collections...
+          </p>
         </DialogTrigger>
 
         <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-[calc(100%-4rem)] md:max-w-2xl bg-zinc-900 border-zinc-800 text-white">
