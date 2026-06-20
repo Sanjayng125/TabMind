@@ -4,7 +4,7 @@
 
 TabMind is an AI-powered tab manager — a Chrome extension + web app that automatically summarises and tags every browser tab you save, so you can find anything weeks later without remembering the URL.
 
-![TabMind Dashboard](<img width="1919" height="867" alt="Screenshot 2026-06-20 122434" src="https://github.com/user-attachments/assets/1a9c06d8-90ac-4ee2-a901-9955cad3a54c" />)
+<img width="1919" height="867" alt="TabMind Dashboard" src="https://github.com/user-attachments/assets/1a9c06d8-90ac-4ee2-a901-9955cad3a54c" />
 
 ---
 
