@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const supabase = createClient();
   const queryClient = useQueryClient();
 
@@ -44,7 +45,8 @@ export default function Header() {
   async function handleSignOut() {
     await supabase.auth.signOut();
     queryClient.clear();
-    redirect("/");
+    router.replace("/");
+    router.refresh();
   }
 
   if (pathname.startsWith("/dashboard")) return null;

@@ -18,7 +18,6 @@ export async function GET(req: Request) {
             return NextResponse.json({ tabs: [] })
         }
 
-        // Search across title, summary, url, and tags
         const { data: tabs, error } = await supabase
             .from('tabs')
             .select('*')
@@ -31,7 +30,6 @@ export async function GET(req: Request) {
 
         if (error) throw error
 
-        // Also search by tag match in JS (Supabase array contains)
         const { data: tagTabs } = await supabase
             .from('tabs')
             .select('*')
@@ -39,7 +37,6 @@ export async function GET(req: Request) {
             .contains('tags', [q.toLowerCase()])
             .limit(10)
 
-        // Merge + deduplicate by id
         const all = [...(tabs ?? []), ...(tagTabs ?? [])]
         const seen = new Set<string>()
         const merged = all.filter((t) => {

@@ -15,7 +15,6 @@ export async function PATCH(
 
         const body = await req.json()
 
-        // Only allow safe fields to be updated
         const allowed = ['collection_id', 'title']
         const updates: Record<string, unknown> = {}
         allowed.forEach((key) => {

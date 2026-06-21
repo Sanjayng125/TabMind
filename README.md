@@ -17,21 +17,23 @@ TabMind is an AI-powered tab manager — a Chrome extension + web app that autom
 - **Full-text search** — find any tab by title, summary, URL, or tag
 - **Responsive dashboard** — manage your tabs from any device
 - **Google OAuth** — sign in with one click, no passwords
+- **Cashfree payments** — upgrade to Pro with a single click
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer      | Tech                         |
-| ---------- | ---------------------------- |
-| Framework  | Next.js (App Router)         |
-| Language   | TypeScript                   |
-| Styling    | Tailwind CSS + shadcn/ui     |
-| Database   | Supabase (Postgres + RLS)    |
-| Auth       | Supabase Auth (Google OAuth) |
-| AI         | Google Gemini 2.0 Flash      |
-| Extension  | Chrome Manifest V3           |
-| Deployment | Vercel                       |
+| Layer           | Tech                         |
+| --------------- | ---------------------------- |
+| Framework       | Next.js (App Router)         |
+| Language        | TypeScript                   |
+| Styling         | Tailwind CSS + shadcn/ui     |
+| Database        | Supabase (Postgres + RLS)    |
+| Auth            | Supabase Auth (Google OAuth) |
+| Payment Gateway | Cashfree                     |
+| AI              | Google Gemini 2.0 Flash      |
+| Extension       | Chrome Manifest V3           |
+| Deployment      | Vercel                       |
 
 ---
 
@@ -61,16 +63,20 @@ cp sample.env .env.local
 Fill in your `.env.local`:
 
 ```env
+NEXT_PUBLIC_APP_URL=your_app_url
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 GEMINI_API_KEY=your_gemini_api_key
+CASHFREE_APP_ID=your_cashfree_app_id
+CASHFREE_SECRET_KEY=your_cashfree_secret_key
+CASHFREE_ENV=your_cashfree_env # (production or sandbox)
 ```
 
 ### 3. Set up Supabase
 
-Run the SQL in `supabase/schema.sql` in your Supabase SQL editor to create the tables, indexes, RLS policies, and auto-profile trigger.
+Run the SQL in `schema.sql` in your Supabase SQL editor to create the tables, indexes, RLS policies, and auto-profile trigger.
 
 ### 4. Run the dev server
 

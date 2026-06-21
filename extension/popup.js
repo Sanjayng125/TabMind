@@ -92,7 +92,7 @@ async function saveAllTabs() {
             progressText.textContent = `⏳ Rate limited. Retry in ${data.retryAfter}s`;
             progressText.style.color = "#f59e0b";
           }
-          break; // stop processing remaining tabs
+          break;
         } else if (data.duplicate) {
           statusEl.className = "tab-status status-duplicate";
           statusEl.textContent = "~";

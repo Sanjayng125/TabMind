@@ -6,6 +6,7 @@ export type Profile = {
     plan: 'free' | 'pro'
     tabs_limit: number
     collections_limit: number
+    is_ordered: boolean
     created_at: string
 }
 
@@ -26,5 +27,14 @@ export type Collection = {
     user_id: string
     name: string
     color: string
+    created_at: string
+}
+
+export type Order = {
+    id: string
+    cashfree_order_id: string
+    amount: number
+    currency: string
+    status: 'pending' | 'paid' | 'failed'
     created_at: string
 }

@@ -65,7 +65,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'URL is required' }, { status: 400 })
         }
 
-        // Validate URL
         try { new URL(url) } catch {
             return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
         }
@@ -94,7 +93,6 @@ export async function POST(req: Request) {
             )
         }
 
-        // Check for duplicates
         const { data: existingTab } = await supabase
             .from('tabs')
             .select('*')
@@ -106,7 +104,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Tab already exists', duplicate: true }, { status: 409 })
         }
 
-        // Scrape the page
         const { title, text, favicon } = await scrapeUrl(url)
 
         const { data: collections } = await supabase
@@ -114,7 +111,6 @@ export async function POST(req: Request) {
             .select('id, name')
             .eq('user_id', user.id)
 
-        // Build AI prompt
         const prompt =
             `You are a smart tab organiser. Analyse this webpage and respond ONLY with valid JSON — no markdown, no backticks, no explanation.
 
@@ -144,18 +140,14 @@ export async function POST(req: Request) {
             - Return null if no collection fits or if list is empty
             - Return the exact name string, not an id`
 
-        // Call Gemini
         const result = await geminiModel.generateContent(prompt)
         const raw = result.response.text().trim()
 
-        // Parse JSON safely
         let parsed: { summary: string; tags: string[], collection: string | null }
         try {
-            // Strip any accidental markdown fences
             const clean = raw.replace(/```json|```/g, '').trim()
             parsed = JSON.parse(clean)
         } catch {
-            // Fallback if AI returns bad JSON
             parsed = {
                 summary: title,
                 tags: ['untagged'],
@@ -168,7 +160,6 @@ export async function POST(req: Request) {
                 c.name.toLowerCase() === parsed.collection?.toLowerCase()
         )
 
-        // Save to Supabase
         const { data: tab, error } = await supabase
             .from('tabs')
             .insert({

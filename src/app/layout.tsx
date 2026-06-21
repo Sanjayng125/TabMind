@@ -24,13 +24,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        // "h-full",
-        // "antialiased",
-        // "font-mono",
-        "dark",
-        jetbrainsMono.variable,
-      )}
+      className={cn("dark", jetbrainsMono.variable)}
       suppressHydrationWarning
     >
       <body className="bg-[#0A0A0D] antialiased">

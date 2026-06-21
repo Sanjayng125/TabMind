@@ -5,26 +5,88 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
-import type { Profile } from "@/types/database";
+import type { Order, Profile } from "@/types/database";
 import { PLANS } from "@/lib/constants";
 import DeleteAccountDialog from "./DeleteAccountDialog";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { load } from "@cashfreepayments/cashfree-js";
+import { useRouter } from "next/navigation";
 
 export default function Settings({
   user,
   profile,
+  orders,
   tabsCount,
   collectionsCount,
 }: {
   user: User;
   profile: Profile | null;
+  orders: Order[];
   tabsCount: number;
   collectionsCount: number;
 }) {
   const supabase = createClient();
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const handleUpgradeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/payments/create-order", {
+        method: "POST",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to create order!");
+      }
+
+      // Load Cashfree SDK and open payment
+      const cashfreeInstance = await load({ mode: "sandbox" });
+
+      if (!cashfreeInstance) {
+        throw new Error("Failed to load payment service. Please try again!");
+      }
+
+      await cashfreeInstance.checkout({
+        paymentSessionId: data.paymentSessionId,
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleVerifyPaymentMutation = useMutation({
+    mutationFn: async () => {
+      if (!profile?.is_ordered) return;
+
+      const res = await fetch("/api/payments/verify");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to verify payment");
+      }
+
+      return data;
+    },
+    onSuccess: (data) => {
+      if (data?.success) {
+        toast.success("Payment verified successfully. You're on Pro!");
+      } else if (data?.isPending) {
+        toast.success("Payment verification pending. Please wait...");
+      } else {
+        toast.error(data?.error || "Failed to verify payment");
+      }
+
+      router.refresh();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const initials =
     user.user_metadata?.full_name
@@ -39,9 +101,8 @@ export default function Settings({
     window.location.href = "/";
   }
 
-  const isFree = profile?.plan === "free";
   const tabsUsagePct = Math.min(
-    (tabsCount / (profile?.tabs_limit ?? 20)) * 100,
+    (tabsCount / (profile?.tabs_limit ?? 50)) * 100,
     100,
   );
   const collectionsUsagePct = Math.min(
@@ -76,12 +137,12 @@ export default function Settings({
               <Badge
                 variant="outline"
                 className={
-                  isFree
+                  profile?.plan === "free"
                     ? "border-zinc-700 text-zinc-400"
                     : "border-indigo-700 text-indigo-400 bg-indigo-950/30"
                 }
               >
-                {isFree ? "Free" : "Pro"}
+                {profile?.plan === "free" ? "Free" : "Pro"}
               </Badge>
             </div>
             <p className="text-zinc-500 text-sm">{user.email}</p>
@@ -148,7 +209,7 @@ export default function Settings({
       </div>
 
       {/* Plan */}
-      {isFree && (
+      {profile?.plan === "free" && (
         <div className="bg-indigo-950/20 border border-indigo-900/50 rounded-xl p-5 mb-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -157,12 +218,102 @@ export default function Settings({
                 {PLANS[1].features.join(", ")}.
               </p>
             </div>
-            <Button
-              size="sm"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white shrink-0"
-            >
-              {PLANS[1].price}
-            </Button>
+            {profile?.is_ordered ? (
+              <Button
+                size="sm"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white shrink-0 flex items-center gap-2"
+                onClick={() => handleVerifyPaymentMutation.mutate()}
+                disabled={handleVerifyPaymentMutation.isPending}
+              >
+                {handleVerifyPaymentMutation.isPending ? (
+                  <>
+                    <span>Verifying...</span>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  </>
+                ) : (
+                  "Verify payment"
+                )}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white shrink-0"
+                onClick={() => handleUpgradeMutation.mutate()}
+                disabled={handleUpgradeMutation.isPending}
+              >
+                {handleUpgradeMutation.isPending
+                  ? "Loading..."
+                  : PLANS[1].price}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {profile?.plan === "pro" && (
+        <div className="bg-green-950/20 border border-green-900/50 rounded-xl p-5 mb-4">
+          <p className="text-green-400 font-medium mb-1">✅ You're on Pro</p>
+          <p className="text-zinc-500 text-sm">
+            Lifetime access — no renewals, ever.
+          </p>
+        </div>
+      )}
+
+      {/* Orders */}
+      {orders.length > 0 && (
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 mb-4">
+          <p className="text-xs text-zinc-600 uppercase tracking-widest mb-4">
+            Payment History
+          </p>
+          <div className="flex flex-col gap-2">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="flex md:items-center md:justify-between max-md:flex-col gap-2 md:gap-4 py-3 border-b border-zinc-800/60 last:border-0"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs font-mono text-zinc-400 truncate">
+                    #{order.id}
+                  </p>
+                  <p className="text-xs text-zinc-600 mt-0.5">
+                    {new Date(order.created_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}{" "}
+                    at{" "}
+                    {new Date(order.created_at).toLocaleTimeString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <p className="text-sm font-semibold text-white">
+                    {order.currency}{" "}
+                    {order.amount.toLocaleString("en-IN", {
+                      minimumFractionDigits: 0,
+                    })}
+                  </p>
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                      order.status === "paid"
+                        ? "bg-green-950/50 text-green-400 border border-green-900/50"
+                        : order.status === "pending"
+                          ? "bg-amber-950/50 text-amber-400 border border-amber-900/50"
+                          : "bg-red-950/50 text-red-400 border border-red-900/50"
+                    }`}
+                  >
+                    {order.status === "paid"
+                      ? "✓ Paid"
+                      : order.status === "pending"
+                        ? "⏳ Pending"
+                        : "✕ Failed"}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

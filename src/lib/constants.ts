@@ -61,7 +61,7 @@ export const PLANS = [
         period: "forever",
         desc: "Perfect to get started",
         features: [
-            "50 tabs saved",
+            "50 tabs",
             "AI tags + summaries",
             "50 collections",
             "Search collections",

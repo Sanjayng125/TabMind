@@ -39,17 +39,14 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getClaims()
     const user = data?.claims
 
-    // Protect dashboard routes
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
         const url = request.nextUrl.clone()
         url.pathname = '/signin'
         return NextResponse.redirect(url)
     }
 
-    // Redirect logged-in users away from auth pages
     if (user && (
-        request.nextUrl.pathname === '/signin' ||
-        request.nextUrl.pathname === '/signup'
+        request.nextUrl.pathname === '/signin'
     )) {
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
