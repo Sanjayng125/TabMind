@@ -73,7 +73,7 @@ export const PLANS = [
     {
         name: "Pro",
         price: "₹299",
-        period: "One time payment",
+        period: "forever",
         desc: "For power users",
         features: [
             "1000 tabs",

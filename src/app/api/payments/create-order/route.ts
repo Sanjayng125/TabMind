@@ -47,7 +47,7 @@ export async function POST() {
                 customer_name: user.user_metadata?.full_name ?? 'TabMind User',
             },
             order_meta: {
-                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings?order_id=${orderId}`,
+                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings`,
                 notify_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/webhook`,
             },
             order_note: 'TabMind Pro — Lifetime Access',
